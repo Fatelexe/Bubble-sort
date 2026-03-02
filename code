@@ -1,0 +1,50 @@
+import random
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+
+def bubble_sort_steps(arr):
+    a = arr[:]
+    n = len(a)
+    for i in range(n):  # number of passes
+        for j in range(0, n - i - 1):   # compare neighbors
+            if a[j] > a[j + 1]: # check for order
+                a[j], a[j + 1] = a[j + 1], a[j] # swap
+                yield a[:] #sync with generator
+
+
+#  Generate random data
+N = 20
+data = [random.randint(1, 99) for _ in range(N)]
+
+steps = bubble_sort_steps(data)
+
+#  Create figure
+fig, ax = plt.subplots()
+ax.set_title("Bubble Sort Animation (with values)")
+bars = ax.bar(range(len(data)), data)
+
+ax.set_ylim(0, max(data) * 1.2)
+
+# Create text labels for each bar
+labels = [ax.text(i, v + 1, str(v), ha='center') for i, v in enumerate(data)]
+
+
+def update(frame):
+    for bar, val, label in zip(bars, frame, labels):
+        bar.set_height(val)
+        label.set_y(val + 1)
+        label.set_text(str(val))
+
+    return (*bars, *labels)
+
+# settings for ani/graph
+ani = animation.FuncAnimation(
+    fig,
+    update,
+    frames=steps,
+    interval=250,
+    repeat=False
+)
+
+plt.show()
